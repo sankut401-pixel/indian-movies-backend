@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row">
+    <!-- Poster -->
+    <div class="col-md-4 mb-4">
+        <img
+            src="{{ movie.poster.url }}"
+            alt="{{ movie.title }}"
+            class="img-fluid rounded shadow"
+        >
+    </div>
+
+    <!-- Details -->
+    <div class="col-md-8">
+        <h2 class="mb-2">{{ movie.title }}</h2>
+
+        <span class="badge badge-{{ movie.release_type }} mb-3">
+            {{ movie.release_type }}
+        </span>
+
+        <p class="text-muted mt-3">
+            <strong>Release Date:</strong> {{ movie.release_date }}
+        </p>
+
+        <p><strong>Languages:</strong> {{ movie.languages }}</p>
+        <p><strong>Genres:</strong> {{ movie.genres }}</p>
+        <p><strong>Cast:</strong> {{ movie.cast }}</p>
+
+        <hr>
+
+        <p>{{ movie.synopsis }}</p>
+
+        <!-- Action Buttons -->
+        <div class="mt-4 d-flex align-items-center gap-3">
+
+            {% if movie.theatre_booking_link %}
+                <a
+                    href="{{ movie.theatre_booking_link }}"
+                    target="_blank"
+                    class="btn btn-danger"
+                >
+                    🎟 Book Tickets
+                </a>
+            {% endif %}
+
+            {% if movie.ott_watch_link %}
+                <a
+                    href="{{ movie.ott_watch_link }}"
+                    target="_blank"
+                    class="btn btn-primary d-flex align-items-center gap-2"
+                >
+                    {% if movie.ott_platform.logo %}
+                        <img
+                            src="{{ movie.ott_platform.logo.url }}"
+                            alt="{{ movie.ott_platform.name }}"
+                            style="height:22px;"
+                        >
+                    {% endif %}
+                    Watch on {{ movie.ott_platform.name }}
+                </a>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+

@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<form method="get" class="row g-2 mb-4">
+    <div class="col-md-4">
+        <input
+            type="text"
+            name="q"
+            class="form-control"
+            placeholder="Search movie..."
+            value="{{ query }}"
+        >
+    </div>
+
+    <div class="col-md-3">
+        <select name="lang" class="form-select">
+            <option value="">All Languages</option>
+            <option value="Hindi" {% if language == "Hindi" %}selected{% endif %}>Hindi</option>
+            <option value="Tamil" {% if language == "Tamil" %}selected{% endif %}>Tamil</option>
+            <option value="Telugu" {% if language == "Telugu" %}selected{% endif %}>Telugu</option>
+            <option value="Malayalam" {% if language == "Malayalam" %}selected{% endif %}>Malayalam</option>
+            <option value="Kannada" {% if language == "Kannada" %}selected{% endif %}>Kannada</option>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <select name="type" class="form-select">
+            <option value="">All Releases</option>
+            <option value="THEATRE" {% if release_type == "THEATRE" %}selected{% endif %}>Theatre</option>
+            <option value="OTT" {% if release_type == "OTT" %}selected{% endif %}>OTT</option>
+            <option value="BOTH" {% if release_type == "BOTH" %}selected{% endif %}>Theatre + OTT</option>
+        </select>
+    </div>
+
+    <div class="col-md-2">
+        <button class="btn btn-dark w-100" type="submit">
+            Apply
+        </button>
+    </div>
+</form>
+
+{% for date, movies in grouped_movies.items %}
+    <div class="date-header">
+        📅 {{ date }}
+    </div>
+
+    <div class="row mt-3">
+        {% for movie in movies %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="movie-card">
+                    <img
+                        src="{{ movie.poster.url }}"
+                        alt="{{ movie.title }}"
+                        class="movie-poster"
+                    >
+
+                    <div class="p-3">
+                        <h5 class="mb-1">
+                            <a
+                                href="{% url 'movie_detail' movie.id %}"
+                                class="text-decoration-none text-dark"
+                            >
+                                {{ movie.title }}
+                            </a>
+                        </h5>
+
+                        <p class="text-muted mb-1">
+                            {{ movie.languages }}
+                        </p>
+
+                        <span class="badge badge-{{ movie.release_type }}">
+                            {{ movie.release_type }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% empty %}
+    <p>No movies found.</p>
+{% endfor %}
+
+<!-- Pagination -->
+<nav class="mt-4">
+    <ul class="pagination justify-content-center">
+
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ query }}&lang={{ language }}&type={{ release_type }}">
+                    Previous
+                </a>
+            </li>
+        {% endif %}
+
+        <li class="page-item active">
+            <span class="page-link">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+        </li>
+
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ query }}&lang={{ language }}&type={{ release_type }}">
+                    Next
+                </a>
+            </li>
+        {% endif %}
+
+    </ul>
+</nav>
+
+{% endblock %}
+
+
+
