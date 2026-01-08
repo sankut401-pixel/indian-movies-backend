@@ -28,6 +28,15 @@ class Movie(models.Model):
         choices=RELEASE_TYPE_CHOICES
     )
 
+    # ⭐ ADD THIS FIELD
+    rating = models.DecimalField(
+        max_digits=3,
+        decimal_places=1,
+        null=True,
+        blank=True,
+        help_text="Rating out of 10 (e.g. 8.5)"
+    )
+
     languages = models.CharField(
         max_length=200,
         help_text="Comma separated (Hindi, Tamil, Telugu)"
