@@ -1,8 +1,15 @@
 from collections import OrderedDict
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
-from .models import Movie
+from rest_framework import generics
 
+from .models import Movie
+from .serializers import MovieSerializer
+
+
+# ===========================
+# 🌐 WEB VIEWS (HTML)
+# ===========================
 
 def home(request):
     query = request.GET.get('q', '')
@@ -20,7 +27,7 @@ def home(request):
     if language:
         movies = movies.filter(languages__icontains=language)
 
-    paginator = Paginator(movies, 9)  # 9 movies per page
+    paginator = Paginator(movies, 9)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -41,3 +48,11 @@ def movie_detail(request, pk):
     movie = get_object_or_404(Movie, pk=pk)
     return render(request, 'movie_detail.html', {'movie': movie})
 
+
+# ===========================
+# 📡 API VIEWS (JSON)
+# ===========================
+
+class MovieListAPIView(generics.ListAPIView):
+    queryset = Movie.objects.all().order_by('release_date')
+    serializer_class = MovieSerializer
