@@ -21,6 +21,7 @@ class MovieSerializer(serializers.ModelSerializer):
             'poster',
             'release_date',
             'release_type',
+            'rating',
             'languages',
             'genres',
             'cast',
