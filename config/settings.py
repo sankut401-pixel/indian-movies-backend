@@ -3,21 +3,34 @@ Django settings for config project.
 """
 
 from pathlib import Path
+import os
+import dj_database_url
 
-# Build paths inside the project
+# ======================
+# BASE DIRECTORY
+# ======================
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+# ======================
 # SECURITY
-SECRET_KEY = 'django-insecure-!vv_5b2u2q(k(nyu&t-4$g73-c!pipl$z!x&6q9!1*+&e@*wa8'
+# ======================
 
-DEBUG = True
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY",
+    "django-insecure-dev-key-change-in-production"
+)
 
-# IMPORTANT: allow all hosts for Render + local dev
-ALLOWED_HOSTS = ['*']
+DEBUG = os.environ.get("DEBUG", "False") == "True"
+
+ALLOWED_HOSTS = ["*"]
 
 
-# Application definition
+# ======================
+# APPLICATIONS
+# ======================
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -34,6 +47,10 @@ INSTALLED_APPS = [
 ]
 
 
+# ======================
+# MIDDLEWARE
+# ======================
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -45,8 +62,11 @@ MIDDLEWARE = [
 ]
 
 
-ROOT_URLCONF = 'config.urls'
+# ======================
+# URLS / TEMPLATES
+# ======================
 
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -63,20 +83,38 @@ TEMPLATES = [
     },
 ]
 
-
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
-# Database (SQLite for now — Render supports it for testing)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# ======================
+# DATABASE
+# ======================
+# ✔ PostgreSQL on Render
+# ✔ SQLite only if DATABASE_URL is missing (local dev)
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+if DATABASE_URL:
+    DATABASES = {
+        "default": dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True,
+        )
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
-# Password validation
+# ======================
+# PASSWORD VALIDATION
+# ======================
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -93,7 +131,10 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
+# ======================
+# INTERNATIONALIZATION
+# ======================
+
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -102,15 +143,24 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files
+# ======================
+# STATIC FILES
+# ======================
+
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 
-# Media files (posters, OTT logos)
+# ======================
+# MEDIA FILES (POSTERS / LOGOS)
+# ======================
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 
-# Default primary key field type
+# ======================
+# DEFAULT PRIMARY KEY
+# ======================
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
