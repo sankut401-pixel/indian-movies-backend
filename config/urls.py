@@ -5,9 +5,11 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('movies.urls')),
-    path('api/', include('movies.api_urls')),
+
+    # 🔥 API ROUTES
+    path('api/', include('movies.urls')),
 ]
 
+# Serve media files (posters, OTT logos)
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
