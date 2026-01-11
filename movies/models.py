@@ -1,4 +1,5 @@
 from django.db import models
+from cloudinary.models import CloudinaryField
 
 
 class OTTPlatform(models.Model):
@@ -20,7 +21,7 @@ class Movie(models.Model):
 
     title = models.CharField(max_length=200)
     synopsis = models.TextField()
-    poster = models.ImageField(upload_to='posters/')
+    poster = CloudinaryField('poster', blank=True, null=True)
 
     release_date = models.DateField()
     release_type = models.CharField(
