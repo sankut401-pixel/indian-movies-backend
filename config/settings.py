@@ -89,8 +89,8 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # ======================
 # DATABASE
 # ======================
-# ✔ PostgreSQL on Render
-# ✔ SQLite only if DATABASE_URL is missing (local dev)
+# PostgreSQL on Render
+# SQLite locally
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
@@ -136,9 +136,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # ======================
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
 USE_TZ = True
 
@@ -152,7 +150,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 
 # ======================
-# MEDIA FILES (POSTERS / LOGOS)
+# MEDIA FILES
 # ======================
 
 MEDIA_URL = '/media/'
