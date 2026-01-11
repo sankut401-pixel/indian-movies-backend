@@ -153,3 +153,17 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1",
     "https://*.onrender.com",
 ]
+import os
+
+if os.environ.get("DJANGO_SUPERUSER_USERNAME"):
+    try:
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        if not User.objects.filter(username=os.environ["DJANGO_SUPERUSER_USERNAME"]).exists():
+            User.objects.create_superuser(
+                username=os.environ["DJANGO_SUPERUSER_USERNAME"],
+                email=os.environ.get("DJANGO_SUPERUSER_EMAIL"),
+                password=os.environ["DJANGO_SUPERUSER_PASSWORD"],
+            )
+    except Exception:
+        pass
