@@ -16,12 +16,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 # ======================
 
-SECRET_KEY = "django-insecure-dev-key-change-in-production"
-
-import os
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY",
+    "django-insecure-dev-key-change-in-production"
+)
 
 DEBUG = os.environ.get("DEBUG", "True") == "True"
-
 
 ALLOWED_HOSTS = ["*"]
 
@@ -31,16 +31,19 @@ ALLOWED_HOSTS = ["*"]
 # ======================
 
 INSTALLED_APPS = [
+    # Django core
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'cloudinary',
-    'cloudinary_storage',
+
     # Third-party
     'rest_framework',
+    'corsheaders',
+    'cloudinary',
+    'cloudinary_storage',
 
     # Local apps
     'movies',
@@ -54,7 +57,10 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+
+    # CORS MUST BE BEFORE CommonMiddleware
     'corsheaders.middleware.CorsMiddleware',
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -88,7 +94,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # ======================
-# DATABASE (SQLITE ONLY)
+# DATABASE (SQLITE)
 # ======================
 
 DATABASES = {
@@ -104,18 +110,10 @@ DATABASES = {
 # ======================
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 
@@ -123,8 +121,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # INTERNATIONALIZATION
 # ======================
 
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = "en-us"
+TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
@@ -133,43 +131,14 @@ USE_TZ = True
 # STATIC FILES
 # ======================
 
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 # ======================
-# MEDIA FILES
+# CLOUDINARY (MEDIA STORAGE)
 # ======================
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-
-# ======================
-# DEFAULT PRIMARY KEY
-# ======================
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost",
-    "http://127.0.0.1",
-    "https://*.onrender.com",
-]
-import os
-
-if os.environ.get("DJANGO_SUPERUSER_USERNAME"):
-    try:
-        from django.contrib.auth import get_user_model
-        User = get_user_model()
-        if not User.objects.filter(username=os.environ["DJANGO_SUPERUSER_USERNAME"]).exists():
-            User.objects.create_superuser(
-                username=os.environ["DJANGO_SUPERUSER_USERNAME"],
-                email=os.environ.get("DJANGO_SUPERUSER_EMAIL"),
-                password=os.environ["DJANGO_SUPERUSER_PASSWORD"],
-            )
-    except Exception:
-        pass
-CORS_ALLOW_ALL_ORIGINS = True
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
@@ -180,4 +149,50 @@ CLOUDINARY_STORAGE = {
     "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
 }
 
+# 🔴 IMPORTANT: Cloudinary MUST be the only media backend
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+
+# ❌ DO NOT define MEDIA_URL or MEDIA_ROOT
+# They BREAK Cloudinary if present
+
+
+# ======================
+# CORS / CSRF
+# ======================
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost",
+    "http://127.0.0.1",
+    "https://*.onrender.com",
+]
+
+
+# ======================
+# DEFAULT PRIMARY KEY
+# ======================
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# ======================
+# AUTO CREATE SUPERUSER (RENDER FREE PLAN)
+# ======================
+
+if os.environ.get("DJANGO_SUPERUSER_USERNAME"):
+    try:
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+
+        if not User.objects.filter(
+            username=os.environ["DJANGO_SUPERUSER_USERNAME"]
+        ).exists():
+            User.objects.create_superuser(
+                username=os.environ["DJANGO_SUPERUSER_USERNAME"],
+                email=os.environ.get("DJANGO_SUPERUSER_EMAIL"),
+                password=os.environ["DJANGO_SUPERUSER_PASSWORD"],
+            )
+    except Exception:
+        pass
+    
