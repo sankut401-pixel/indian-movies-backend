@@ -4,7 +4,6 @@ Django settings for config project.
 
 from pathlib import Path
 import os
-import dj_database_url
 
 # ======================
 # BASE DIRECTORY
@@ -17,12 +16,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 # ======================
 
-SECRET_KEY = os.environ.get(
-    "SECRET_KEY",
-    "django-insecure-dev-key-change-in-production"
-)
+SECRET_KEY = "django-insecure-dev-key-change-in-production"
 
-DEBUG = os.environ.get("DEBUG", "False") == "True"
+import os
+
+DEBUG = os.environ.get("DEBUG", "True") == "True"
+
 
 ALLOWED_HOSTS = ["*"]
 
@@ -87,28 +86,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # ======================
-# DATABASE
+# DATABASE (SQLITE ONLY)
 # ======================
-# PostgreSQL on Render
-# SQLite locally
 
-DATABASE_URL = os.environ.get("DATABASE_URL")
-
-if DATABASE_URL:
-    DATABASES = {
-        "default": dj_database_url.parse(
-            DATABASE_URL,
-            conn_max_age=600,
-            ssl_require=True,
-        )
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
+}
 
 
 # ======================
@@ -162,3 +148,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # ======================
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost",
+    "http://127.0.0.1",
+    "https://*.onrender.com",
+]
