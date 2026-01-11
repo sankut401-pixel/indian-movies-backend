@@ -32,21 +32,21 @@ ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     # Django core
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
 
     # Third-party
-    'rest_framework',
-    'corsheaders',
-    'cloudinary',
-    'cloudinary_storage',
+    "rest_framework",
+    "corsheaders",
+    "cloudinary",
+    "cloudinary_storage",
 
     # Local apps
-    'movies',
+    "movies",
 ]
 
 
@@ -55,17 +55,17 @@ INSTALLED_APPS = [
 # ======================
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
 
-    # CORS MUST BE BEFORE CommonMiddleware
-    'corsheaders.middleware.CorsMiddleware',
+    # CORS MUST be before CommonMiddleware
+    "corsheaders.middleware.CorsMiddleware",
 
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
 
@@ -73,24 +73,24 @@ MIDDLEWARE = [
 # URLS / TEMPLATES
 # ======================
 
-ROOT_URLCONF = 'config.urls'
+ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
+WSGI_APPLICATION = "config.wsgi.application"
 
 
 # ======================
@@ -136,12 +136,18 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 # ======================
-# CLOUDINARY (MEDIA STORAGE)
+# MEDIA / CLOUDINARY
 # ======================
+# These do NOT break Cloudinary.
+# They are required for Django admin + serializers to behave correctly.
 
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+
+# ======================
+# CLOUDINARY CONFIG
+# ======================
 
 CLOUDINARY_STORAGE = {
     "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME"),
@@ -149,11 +155,8 @@ CLOUDINARY_STORAGE = {
     "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
 }
 
-# 🔴 IMPORTANT: Cloudinary MUST be the only media backend
+# Force Cloudinary as default media backend
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-
-# ❌ DO NOT define MEDIA_URL or MEDIA_ROOT
-# They BREAK Cloudinary if present
 
 
 # ======================
@@ -183,8 +186,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 if os.environ.get("DJANGO_SUPERUSER_USERNAME"):
     try:
         from django.contrib.auth import get_user_model
-        User = get_user_model()
 
+        User = get_user_model()
         if not User.objects.filter(
             username=os.environ["DJANGO_SUPERUSER_USERNAME"]
         ).exists():
@@ -195,4 +198,3 @@ if os.environ.get("DJANGO_SUPERUSER_USERNAME"):
             )
     except Exception:
         pass
-    
