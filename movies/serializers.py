@@ -9,23 +9,21 @@ class OTTPlatformSerializer(serializers.ModelSerializer):
 
 
 class MovieSerializer(serializers.ModelSerializer):
+    poster = serializers.SerializerMethodField()
     ott_platform = OTTPlatformSerializer(read_only=True)
-    poster = serializers.ImageField(use_url=True)
 
     class Meta:
         model = Movie
-        fields = [
-            'id',
-            'title',
-            'synopsis',
-            'poster',
-            'release_date',
-            'release_type',
-            'rating',
-            'languages',
-            'genres',
-            'cast',
-            'theatre_booking_link',
-            'ott_platform',
-            'ott_watch_link',
-        ]
+        fields = "__all__"
+
+    def get_poster(self, obj):
+        try:
+            if obj.poster and hasattr(obj.poster, "url"):
+                url = obj.poster.url
+                # Force HTTPS for Android APK
+                if url.startswith("http://"):
+                    url = url.replace("http://", "https://")
+                return url
+            return ""
+        except Exception:
+            return ""
