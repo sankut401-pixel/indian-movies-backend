@@ -5,7 +5,7 @@ from cloudinary.models import CloudinaryField
 class OTTPlatform(models.Model):
     name = models.CharField(max_length=100)
     website = models.URLField(blank=True)
-    logo = models.ImageField(upload_to='ott_logos/', blank=True)
+    logo = CloudinaryField('logo')
 
     def __str__(self):
         return self.name
