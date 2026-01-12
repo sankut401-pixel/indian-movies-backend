@@ -3,9 +3,25 @@ from .models import Movie, OTTPlatform
 
 
 class OTTPlatformSerializer(serializers.ModelSerializer):
+    logo = serializers.SerializerMethodField()
+
     class Meta:
         model = OTTPlatform
-        fields = ['id', 'name', 'website', 'logo']
+        fields = ["id", "name", "website", "logo"]
+
+    def get_logo(self, obj):
+        try:
+            if obj.logo and hasattr(obj.logo, "url"):
+                url = obj.logo.url
+                if url.startswith("http://"):
+                    url = url.replace("http://", "https://")
+                # Cloudinary sometimes returns relative paths
+                if url.startswith("image/"):
+                    return f"https://res.cloudinary.com/{obj.logo.cloud_name}/{url}"
+                return url
+            return ""
+        except Exception:
+            return ""
 
 
 class MovieSerializer(serializers.ModelSerializer):
@@ -20,7 +36,6 @@ class MovieSerializer(serializers.ModelSerializer):
         try:
             if obj.poster and hasattr(obj.poster, "url"):
                 url = obj.poster.url
-                # Force HTTPS for Android APK
                 if url.startswith("http://"):
                     url = url.replace("http://", "https://")
                 return url
