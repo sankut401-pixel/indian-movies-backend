@@ -15,13 +15,10 @@ class OTTPlatformSerializer(serializers.ModelSerializer):
                 url = obj.logo.url
                 if url.startswith("http://"):
                     url = url.replace("http://", "https://")
-                # Cloudinary sometimes returns relative paths
-                if url.startswith("image/"):
-                    return f"https://res.cloudinary.com/{obj.logo.cloud_name}/{url}"
                 return url
-            return ""
         except Exception:
-            return ""
+            pass
+        return ""
 
 
 class MovieSerializer(serializers.ModelSerializer):
