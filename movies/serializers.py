@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from .models import Movie, OTTPlatform
+import cloudinary
+import cloudinary.utils
 
 
 class OTTPlatformSerializer(serializers.ModelSerializer):
@@ -7,19 +9,19 @@ class OTTPlatformSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OTTPlatform
-        fields = ['id', 'name', 'website', 'logo']
+        fields = ["id", "name", "website", "logo"]
 
     def get_logo(self, obj):
         try:
-            if obj.logo and hasattr(obj.logo, "url"):
-                url = obj.logo.url
-                # force https (Cloudinary sometimes gives http)
-                return url.replace("http://", "https://")
+            if obj.logo:
+                url, _ = cloudinary.utils.cloudinary_url(
+                    obj.logo.public_id,
+                    secure=True
+                )
+                return url
         except Exception:
             pass
         return ""
-
-
 
 class MovieSerializer(serializers.ModelSerializer):
     poster = serializers.SerializerMethodField()
@@ -31,9 +33,14 @@ class MovieSerializer(serializers.ModelSerializer):
 
     def get_poster(self, obj):
         try:
-            if obj.poster and hasattr(obj.poster, "url"):
-                return obj.poster.url.replace("http://", "https://")
+            if obj.poster:
+                url, _ = cloudinary.utils.cloudinary_url(
+                    obj.poster.public_id,
+                    secure=True
+                )
+                return url
         except Exception:
             pass
         return ""
 
+    
