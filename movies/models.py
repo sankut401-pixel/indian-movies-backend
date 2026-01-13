@@ -1,11 +1,15 @@
 from django.db import models
-from cloudinary.models import CloudinaryField
 
 
 class OTTPlatform(models.Model):
     name = models.CharField(max_length=100)
     website = models.URLField(blank=True)
-    logo = CloudinaryField('logo')
+
+    # 🔒 URL ONLY (NO FILE UPLOAD)
+    logo = models.URLField(
+        blank=True,
+        help_text="Paste Cloudinary Secure URL here"
+    )
 
     def __str__(self):
         return self.name
@@ -21,7 +25,12 @@ class Movie(models.Model):
 
     title = models.CharField(max_length=200)
     synopsis = models.TextField()
-    poster = CloudinaryField('poster', blank=True, null=True)
+
+    # 🔒 URL ONLY (NO FILE UPLOAD)
+    poster = models.URLField(
+        blank=True,
+        help_text="Paste Cloudinary Secure URL here"
+    )
 
     release_date = models.DateField()
     release_type = models.CharField(
@@ -29,28 +38,16 @@ class Movie(models.Model):
         choices=RELEASE_TYPE_CHOICES
     )
 
-    # ⭐ ADD THIS FIELD
     rating = models.DecimalField(
         max_digits=3,
         decimal_places=1,
         null=True,
-        blank=True,
-        help_text="Rating out of 10 (e.g. 8.5)"
+        blank=True
     )
 
-    languages = models.CharField(
-        max_length=200,
-        help_text="Comma separated (Hindi, Tamil, Telugu)"
-    )
-
-    genres = models.CharField(
-        max_length=200,
-        help_text="Comma separated (Action, Drama)"
-    )
-
-    cast = models.TextField(
-        help_text="Main cast names"
-    )
+    languages = models.CharField(max_length=200)
+    genres = models.CharField(max_length=200)
+    cast = models.TextField()
 
     theatre_booking_link = models.URLField(blank=True)
 
@@ -60,6 +57,7 @@ class Movie(models.Model):
         null=True,
         blank=True
     )
+
     ott_watch_link = models.URLField(blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
