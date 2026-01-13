@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import Movie, OTTPlatform
-import cloudinary
 import cloudinary.utils
 
 
@@ -16,12 +15,14 @@ class OTTPlatformSerializer(serializers.ModelSerializer):
             if obj.logo:
                 url, _ = cloudinary.utils.cloudinary_url(
                     obj.logo.public_id,
+                    resource_type="image",   # 🔑 IMPORTANT FIX
                     secure=True
                 )
                 return url
         except Exception:
             pass
         return ""
+
 
 class MovieSerializer(serializers.ModelSerializer):
     poster = serializers.SerializerMethodField()
@@ -36,11 +37,10 @@ class MovieSerializer(serializers.ModelSerializer):
             if obj.poster:
                 url, _ = cloudinary.utils.cloudinary_url(
                     obj.poster.public_id,
+                    resource_type="image",   # 🔑 IMPORTANT FIX
                     secure=True
                 )
                 return url
         except Exception:
             pass
         return ""
-
-    
