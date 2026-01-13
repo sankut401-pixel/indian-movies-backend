@@ -1,22 +1,17 @@
 from django.db import models
+from cloudinary.models import CloudinaryField
 
 
 class OTTPlatform(models.Model):
     name = models.CharField(max_length=100)
     website = models.URLField(blank=True)
-
-    # 🔒 URL ONLY (NO FILE UPLOAD)
-    logo = models.URLField(
-        blank=True,
-        help_text="Paste Cloudinary Secure URL here"
-    )
+    logo = CloudinaryField('logo', blank=True, null=True)
 
     def __str__(self):
         return self.name
 
 
 class Movie(models.Model):
-
     RELEASE_TYPE_CHOICES = [
         ('THEATRE', 'Theatre'),
         ('OTT', 'OTT'),
@@ -25,18 +20,10 @@ class Movie(models.Model):
 
     title = models.CharField(max_length=200)
     synopsis = models.TextField()
-
-    # 🔒 URL ONLY (NO FILE UPLOAD)
-    poster = models.URLField(
-        blank=True,
-        help_text="Paste Cloudinary Secure URL here"
-    )
+    poster = CloudinaryField('poster', blank=True, null=True)
 
     release_date = models.DateField()
-    release_type = models.CharField(
-        max_length=10,
-        choices=RELEASE_TYPE_CHOICES
-    )
+    release_type = models.CharField(max_length=10, choices=RELEASE_TYPE_CHOICES)
 
     rating = models.DecimalField(
         max_digits=3,
@@ -57,7 +44,6 @@ class Movie(models.Model):
         null=True,
         blank=True
     )
-
     ott_watch_link = models.URLField(blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)

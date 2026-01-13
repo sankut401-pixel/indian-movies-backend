@@ -1,44 +1,19 @@
 from rest_framework import serializers
 from .models import Movie, OTTPlatform
-import cloudinary.utils
 
 
 class OTTPlatformSerializer(serializers.ModelSerializer):
-    logo = serializers.SerializerMethodField()
+    logo = serializers.CharField(source='logo.url', read_only=True)
 
     class Meta:
         model = OTTPlatform
-        fields = ["id", "name", "website", "logo"]
-
-    def get_logo(self, obj):
-        if not obj.logo:
-            return ""
-        try:
-            url, _ = cloudinary.utils.cloudinary_url(
-                obj.logo.public_id,
-                secure=True
-            )
-            return url
-        except Exception:
-            return ""
+        fields = ['id', 'name', 'website', 'logo']
 
 
 class MovieSerializer(serializers.ModelSerializer):
-    poster = serializers.SerializerMethodField()
+    poster = serializers.CharField(source='poster.url', read_only=True)
     ott_platform = OTTPlatformSerializer(read_only=True)
 
     class Meta:
         model = Movie
-        fields = "__all__"
-
-    def get_poster(self, obj):
-        if not obj.poster:
-            return ""
-        try:
-            url, _ = cloudinary.utils.cloudinary_url(
-                obj.poster.public_id,
-                secure=True
-            )
-            return url
-        except Exception:
-            return ""
+        fields = '__all__'

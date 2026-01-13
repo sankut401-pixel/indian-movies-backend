@@ -135,14 +135,7 @@ STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
-# ======================
-# MEDIA / CLOUDINARY
-# ======================
-# These do NOT break Cloudinary.
-# They are required for Django admin + serializers to behave correctly.
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
 
 
 # ======================
