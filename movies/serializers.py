@@ -11,17 +11,13 @@ class OTTPlatformSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "website", "logo"]
 
     def get_logo(self, obj):
-        try:
-            if obj.logo:
-                url, _ = cloudinary.utils.cloudinary_url(
-                    obj.logo.public_id,
-                    resource_type="image",   # 🔑 IMPORTANT FIX
-                    secure=True
-                )
-                return url
-        except Exception:
-            pass
-        return ""
+        if not obj.logo:
+            return ""
+        url, _ = cloudinary.utils.cloudinary_url(
+            obj.logo.public_id,
+            secure=True
+        )
+        return url
 
 
 class MovieSerializer(serializers.ModelSerializer):
@@ -33,14 +29,10 @@ class MovieSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def get_poster(self, obj):
-        try:
-            if obj.poster:
-                url, _ = cloudinary.utils.cloudinary_url(
-                    obj.poster.public_id,
-                    resource_type="image",   # 🔑 IMPORTANT FIX
-                    secure=True
-                )
-                return url
-        except Exception:
-            pass
-        return ""
+        if not obj.poster:
+            return ""
+        url, _ = cloudinary.utils.cloudinary_url(
+            obj.poster.public_id,
+            secure=True
+        )
+        return url
