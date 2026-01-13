@@ -7,18 +7,18 @@ class OTTPlatformSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OTTPlatform
-        fields = ["id", "name", "website", "logo"]
+        fields = ['id', 'name', 'website', 'logo']
 
     def get_logo(self, obj):
         try:
             if obj.logo and hasattr(obj.logo, "url"):
                 url = obj.logo.url
-                if url.startswith("http://"):
-                    url = url.replace("http://", "https://")
-                return url
+                # force https (Cloudinary sometimes gives http)
+                return url.replace("http://", "https://")
         except Exception:
             pass
         return ""
+
 
 
 class MovieSerializer(serializers.ModelSerializer):
@@ -32,10 +32,8 @@ class MovieSerializer(serializers.ModelSerializer):
     def get_poster(self, obj):
         try:
             if obj.poster and hasattr(obj.poster, "url"):
-                url = obj.poster.url
-                if url.startswith("http://"):
-                    url = url.replace("http://", "https://")
-                return url
-            return ""
+                return obj.poster.url.replace("http://", "https://")
         except Exception:
-            return ""
+            pass
+        return ""
+
