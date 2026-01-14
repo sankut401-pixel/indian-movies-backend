@@ -1,11 +1,10 @@
 from django.db import models
-from cloudinary.models import CloudinaryField
 
 
 class OTTPlatform(models.Model):
     name = models.CharField(max_length=100)
     website = models.URLField(blank=True)
-    logo = CloudinaryField('logo', blank=True, null=True)
+    logo = models.URLField(blank=True)   # ✅ URL ONLY
 
     def __str__(self):
         return self.name
@@ -20,7 +19,8 @@ class Movie(models.Model):
 
     title = models.CharField(max_length=200)
     synopsis = models.TextField()
-    poster = CloudinaryField('poster', blank=True, null=True)
+
+    poster = models.URLField(blank=True)  # ✅ URL ONLY
 
     release_date = models.DateField()
     release_type = models.CharField(max_length=10, choices=RELEASE_TYPE_CHOICES)
