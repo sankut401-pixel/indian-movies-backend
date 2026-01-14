@@ -11,19 +11,12 @@ class OTTPlatformSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "website", "logo"]
 
     def get_logo(self, obj):
-        """
-        ALWAYS return full HTTPS Cloudinary URL.
-        Never return relative paths like ott_logos/xxx.png
-        """
-        try:
-            if obj.logo:
-                url, _ = cloudinary.utils.cloudinary_url(
-                    obj.logo.public_id,
-                    secure=True
-                )
-                return url
-        except Exception:
-            pass
+        if obj.logo:
+            url, _ = cloudinary.utils.cloudinary_url(
+                obj.logo.public_id,
+                secure=True
+            )
+            return url
         return ""
 
 
@@ -36,17 +29,10 @@ class MovieSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def get_poster(self, obj):
-        """
-        ALWAYS return full HTTPS Cloudinary URL.
-        Never return relative paths like posters/xxx.jpg
-        """
-        try:
-            if obj.poster:
-                url, _ = cloudinary.utils.cloudinary_url(
-                    obj.poster.public_id,
-                    secure=True
-                )
-                return url
-        except Exception:
-            pass
+        if obj.poster:
+            url, _ = cloudinary.utils.cloudinary_url(
+                obj.poster.public_id,
+                secure=True
+            )
+            return url
         return ""
