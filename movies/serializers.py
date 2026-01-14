@@ -10,7 +10,12 @@ class OTTPlatformSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "website", "logo"]
 
     def get_logo(self, obj):
-        return obj.logo.url if obj.logo else ""
+        if obj.logo:
+            try:
+                return obj.logo.url
+            except Exception:
+                return ""
+        return ""
 
 
 class MovieSerializer(serializers.ModelSerializer):
@@ -22,4 +27,9 @@ class MovieSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def get_poster(self, obj):
-        return obj.poster.url if obj.poster else ""
+        if obj.poster:
+            try:
+                return obj.poster.url
+            except Exception:
+                return ""
+        return ""
