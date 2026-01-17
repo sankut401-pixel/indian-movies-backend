@@ -1,11 +1,17 @@
+from django.views.decorators.csrf import csrf_exempt
 from collections import OrderedDict
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
+from django.http import JsonResponse
 from rest_framework import generics
 
 from .models import Movie
+from .models import RatingPrediction
 from .serializers import MovieSerializer
-
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from ml.predict import predict_rating
+from ml.embeddings import get_recommendations_for_movie
 
 # ===========================
 # 🌐 WEB VIEWS (HTML)
@@ -48,6 +54,23 @@ def movie_detail(request, pk):
     movie = get_object_or_404(Movie, pk=pk)
     return render(request, 'movie_detail.html', {'movie': movie})
 
+@csrf_exempt
+@api_view(["POST"])
+def predict_movie_rating(request):
+    synopsis = request.data.get("synopsis", "")
+    predicted = predict_rating(synopsis)
+
+    RatingPrediction.objects.create(
+        synopsis_text=synopsis,
+        predicted_rating=predicted
+    )
+
+    return Response({
+        "predicted_rating": predicted
+    })
+
+def health_check(request):
+    return JsonResponse({"status": "ok"})
 
 # ===========================
 # 📡 API VIEWS (JSON)
@@ -56,3 +79,16 @@ def movie_detail(request, pk):
 class MovieListAPIView(generics.ListAPIView):
     queryset = Movie.objects.all().order_by('release_date')
     serializer_class = MovieSerializer
+
+
+@api_view(["GET"])
+def recommend_movies(request, movie_id):
+    data = get_recommendations_for_movie(movie_id)
+
+    if data is None:
+        return Response(
+            {"error": "Movie not found"},
+            status=404
+        )
+
+    return Response(data)

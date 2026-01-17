@@ -50,3 +50,30 @@ class Movie(models.Model):
 
     def __str__(self):
         return self.title
+
+class RatingPrediction(models.Model):
+    movie = models.ForeignKey(
+        Movie,
+        on_delete=models.CASCADE,
+        related_name="ai_predictions",
+        null=True,
+        blank=True
+    )
+    synopsis_text = models.TextField()
+    predicted_rating = models.FloatField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Prediction: {self.predicted_rating}"
+
+class MovieEmbedding(models.Model):
+    movie = models.OneToOneField(
+        Movie,
+        on_delete=models.CASCADE,
+        related_name="embedding"
+    )
+    vector = models.JSONField()   # stores list of floats
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Embedding for {self.movie.title}"
