@@ -7,6 +7,7 @@ class OTTPlatformSerializer(serializers.ModelSerializer):
         model = OTTPlatform
         fields = ["id", "name", "website", "logo"]
 
+
 class MovieSerializer(serializers.ModelSerializer):
     ott_platform = OTTPlatformSerializer(read_only=True)
 
