@@ -27,7 +27,10 @@ DEBUG = os.environ.get("DEBUG", "False") == "True"
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
-    ".onrender.com",
+    "indian-movies-backend-1.onrender.com",
+]
+CSRF_TRUSTED_ORIGINS = [
+    "https://indian-movies-backend-1.onrender.com",
 ]
 
 # ======================
@@ -196,3 +199,11 @@ if os.environ.get("DJANGO_SUPERUSER_USERNAME"):
             )
     except Exception:
         pass
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "Lax"
